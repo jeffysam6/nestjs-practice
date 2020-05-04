@@ -1,16 +1,30 @@
-import {Entity,Column,PrimaryGeneratedColumn } from 'typeorm';
-
+import {Entity,Column,PrimaryGeneratedColumn,PrimaryColumn,Generated,OneToMany } from 'typeorm';
+import {BlogEntity} from '../blog/blog.entity'
 
 
 @Entity('user')
 export class UserEntity {
 	
-	@PrimaryGeneratedColumn('uuid')
+	// @Column('uuid')
+	// id: number;
+
+	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column("text")
+	@Column({ nullable: false, unique: true })
 	username: string;
 
-	@Column("text")
+	@Column({ nullable: false})
 	password: string;
+
+	// @OneToMany(type=> BlogEntity,blog=>blog.id)
+	// blogs : BlogEntity[];
+
+	@Column({ nullable:true})
+	image: string
+
+    // @Column({
+    //     type: "longblob"
+    // })
+    // image: Buffer
 }

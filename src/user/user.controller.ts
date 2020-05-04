@@ -1,43 +1,64 @@
-import { Controller,Get,Param,Post,Put,Body,Query,Delete } from '@nestjs/common';
-import {UserService} from './user.service';
+import { Controller, Get, Res, Param, Post, Put, Body, Query, Delete, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express'
+import { UserService } from './user.service';
 //import { UserLoginDTO } from './dto/user-login.dto';
 import { Request } from 'express';
-
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 // import {userDTO} from './dto/create-book.dto'
 
 
 @Controller('users')
 export class UserController {
 
-    constructor(private userservice:UserService) {}
+  constructor(private userservice: UserService) { }
 
-    @Get()
-     getusers() {
-        return  this.userservice.getusers();
-    }
+  @Get()
+  getusers() {
+    return this.userservice.getusers();
+  }
 
-    @Get(':username')
-    getuser(@Param('username') username:string) {
-        return this.userservice.read(username);
-    }
+  @Get(':id')
+  getuser(@Param('id') id: string) {
+    return this.userservice.read(id);
+  }
+
+  @Post('login')
+  login(@Body() data: any) {
+
+    return this.userservice.loginuser(data);
+  }
 
 
-    @Post('register')
-     register(@Body() userLoginDTO:any) {
-        return  this.userservice.registeruser(userLoginDTO);
-    }
+  @Post('register')
+  register(@Body() userLoginDTO: any) {
+    console.log(userLoginDTO);
+    return this.userservice.registeruser(userLoginDTO);
+  }
 
-    @Delete(':id')
-	destroyuser(@Param('id') id:string){
-		return this.userservice.destroy(id);
-    }
-    
-    @Put(':id')
-    changepassword(@Param('id') id:string,@Body() data:any){
-        return this.userservice.update(id,data)
-    }
+  @Delete(':id')
+  destroyuser(@Param('id') id: string) {
+    return this.userservice.destroy(id);
+  }
 
-   }
+  @Put(':id')
+  changepassword(@Param('id') id: string, @Body() data: any) {
+    return this.userservice.update(id, data)
+  }
+
+  @Post('avatar')
+  @UseInterceptors(FileInterceptor('image'))
+  uploadFile(@UploadedFiles() file) {
+    console.log(file);
+  }
+
+
+  // @Get('avatars/:id')
+  // async serveAvatar(@Param('id') id, @Res() res): Promise<any> {
+  //   res.sendFile(id, { root: 'avatars' });
+  // }
+
+}
         // if(result)
         // {
         //     return "Successfully Registered!!"
@@ -46,7 +67,7 @@ export class UserController {
         // {
         //     return "User with same username already in database"
         // }
-    
+
 
     // @Post('login')
     // async login(@Query() params){
@@ -73,6 +94,3 @@ export class UserController {
     //         return "username doesn't exist in database"
     //     }
     // }
-
-     
-

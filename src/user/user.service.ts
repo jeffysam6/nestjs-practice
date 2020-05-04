@@ -3,6 +3,7 @@ import { Injectable,HttpException  } from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import { UserEntity } from './user.entity';
+import {getRepository,getConnection} from "typeorm";
 
 
 @Injectable()
@@ -25,6 +26,18 @@ export class UserService {
     //     return await this.userRepository.findOne({where : {username:username,password:password}})
     // }
 
+    async loginuser(data:any) {
+      const users = await this.userRepository.find();
+      for(let i=0;i<users.length;i++)
+      {
+        if(users[i]["username"] == data["username"] && users[i]["password"] == data["password"])
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
     async registeruser(data :any) {
 
         const user = await this.userRepository.create(data);
@@ -33,8 +46,8 @@ export class UserService {
     }
 
 
-    async read(username:string) {
-		return await this.userRepository.findOne({where:{username}});
+    async read(id:string) {
+		return await this.userRepository.findOne({where:{id}});
 
     }
     
@@ -46,6 +59,19 @@ export class UserService {
         await this.userRepository.update(id,data);
 		return await this.userRepository.findOne({where: { id }});
     }
+
+    public async setAvatar(id: number, avatarUrl: string){
+      this.userRepository.update(id, {image: avatarUrl});
+  }
+
+    async upload(id,file:any):Promise<any> {
+      await getConnection()
+      .createQueryBuilder()
+      .update(UserEntity)
+      .set({ image: file })
+      .where("id = :id", { id: id})
+      .execute();
+  }
     
     //     loginuser(username:string,password:string) : Promise<any> {
     //     var result = false 

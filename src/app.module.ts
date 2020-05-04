@@ -9,14 +9,18 @@ import { UserModule } from './user/user.module';
 // import { AdminsModule } from './admins/admins.module';
 // import { AdminsService } from './admins/admins.service';
 // import { IdeaModule } from './idea/idea.module';
-
+import { BlogModule } from './blog/blog.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { UserService } from './user/user.service';
+import { UserEntity } from './user/user.entity';
 
 
 
 @Module({
-imports : [TypeOrmModule.forRoot(),UserModule],
+imports : [TypeOrmModule.forRoot(),UserModule, BlogModule,
+          MulterModule.register({dest: './uploads'}),TypeOrmModule.forFeature([UserEntity])],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,UserService],
 
 })
 export class AppModule {}
